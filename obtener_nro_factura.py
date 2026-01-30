@@ -70,9 +70,10 @@ def obtener_tiendas_faltantes(lista_docs):
                 if row:
                     tiendas_con_movimiento.add(str(row[0]).strip())
 
-            print(f"Tiendas con movimiento (NCR) detectadas: {len(tiendas_con_movimiento)}")
-            for i, loja in enumerate(sorted(tiendas_con_movimiento)[:25], 1):
-                print(f"{i:02d}. Tienda: {loja}")
+            # --- Para verificación ---
+            # print(f"Tiendas con movimiento (NCR) detectadas: {len(tiendas_con_movimiento)}")
+            # for i, loja in enumerate(sorted(tiendas_con_movimiento)[:25], 1):
+            #     print(f"{i:02d}. Tienda: {loja}")
 
             # 2. Obtener universo de tiendas del cliente
             cursor.execute("SELECT DISTINCT A1_LOJA FROM SA1010 WHERE A1_COD='4573' AND D_E_L_E_T_<>'*'")
