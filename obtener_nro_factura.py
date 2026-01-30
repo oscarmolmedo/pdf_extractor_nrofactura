@@ -1,12 +1,15 @@
 import pdfplumber
 import re
 import cx_Oracle
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 # --- CONFIGURACIÓN DE CONEXIÓN ---
 DB_CONFIG = {
-    'user': 'pro',
-    'password': 'oracle',
-    'dsn': cx_Oracle.makedsn('130.10.10.16', '1521', service_name='LONDON1')
+    'user': os.getenv('USUARIO_DB'),
+    'password': os.getenv('PASS_DB'),
+    'dsn': cx_Oracle.makedsn(os.getenv('HOST_DB'), os.getenv('PORT_DB'), service_name=os.getenv('SID_DB'))
 }
 
 def extraer_documentos_pdf(ruta_pdf):
@@ -92,7 +95,7 @@ def obtener_tiendas_faltantes(lista_docs):
 
 # --- FLUJO PRINCIPAL ---
 if __name__ == "__main__":
-    archivo = "London Import S.A.30-01.pdf"
+    archivo = "London Import S.A.12-12.pdf"
     
     # Extracción de documentos con tipo
     documentos = extraer_documentos_pdf(archivo)
