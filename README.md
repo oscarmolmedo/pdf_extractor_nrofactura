@@ -29,22 +29,25 @@ Debido a integraciones con librerías específicas de bases de datos antiguas, e
 ├── interfaz.py        # Código de la GUI (Tkinter) y lógica de estados.
 ├── motor_logico.py    # Motor de extracción PDF y consultas SQL.
 └── README.md          # Documentación del proyecto.
+```
 
-⚙️ Instalación y Uso
+## ⚙️ Instalación y Uso
 Clonar el repositorio:
 
 Instalar dependencias:
-
+```
 Bash
-pip install pdfplumber cx_Oracle
+pip install pdfplumber cx_Oracle python-dotenv
+```
 Ejecutar la aplicación:
 
 Bash
 python interfaz.py
 Compilar a EXE (Portable): Si deseas generar el ejecutable para Windows:
-
+```
 Bash
 pyinstaller --noconfirm --onefile --windowed --name "ValidadorTiendas" --clean interfaz.py
+```
 🖥️ Interfaz de Usuario
 La interfaz consta de un flujo de dos pasos:
 
