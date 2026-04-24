@@ -63,7 +63,7 @@ def obtener_tiendas_faltantes(lista_docs):
             sql_ncr = """
                 SELECT DISTINCT F1_LOJA FROM SF1010 
                 WHERE F1_DOC = :nro AND F1_FORNECE = '4573' 
-                  AND F1_SERIE IN ('VAC','VAG','ANC','ALC','AAC') AND D_E_L_E_T_ <> '*'
+                  AND F1_SERIE IN ('VAC','VAG','ANC','ALC','AAC','ACC','VAH','VAF','VAR','VAT') AND D_E_L_E_T_ <> '*'
             """
             
             for doc in lista_docs:
@@ -95,7 +95,7 @@ def obtener_tiendas_faltantes(lista_docs):
 
 # --- FLUJO PRINCIPAL ---
 if __name__ == "__main__":
-    archivo = "London Import S.A.12-12.pdf"
+    archivo = "London Import S.A.17-04.pdf"
     
     # Extracción de documentos con tipo
     documentos = extraer_documentos_pdf(archivo)
@@ -105,11 +105,11 @@ if __name__ == "__main__":
         # Validación en DB y obtención de faltantes
         faltantes = obtener_tiendas_faltantes(documentos)
         
-        print(f"\n--- TIENDAS FALTANTES (TOP 20) ---")
+        print(f"\n--- TIENDAS FALTANTES (TOP{len(faltantes)}) ---")
         if not faltantes:
             print("No se encontraron tiendas faltantes.")
         else:
-            for i, loja in enumerate(faltantes[:25], 1):
+            for i, loja in enumerate(faltantes, 1):
                 print(f"{i:02d}. Tienda: {loja}")
     else:
         print("No se hallaron documentos válidos en el PDF.")
