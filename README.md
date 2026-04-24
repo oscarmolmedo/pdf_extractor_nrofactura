@@ -44,6 +44,7 @@ Ejecutar la aplicación:
 Bash
 python interfaz.py
 Compilar a EXE (Portable): Si deseas generar el ejecutable para Windows:
+Antes de realizarlo verificar variables de conexion de DB en obtener_nro_factura.py
 ```
 Bash
 pyinstaller --noconfirm --onefile --windowed --name "ValidadorTiendas" --clean interfaz.py
