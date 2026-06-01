@@ -9,3 +9,4 @@ __pycache__/
 .env
 .gitignore
 config.json
+plantilla_carga_op_excel.xlsx
