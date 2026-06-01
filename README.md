@@ -1,59 +1,212 @@
-# Validador de Facturas y Notas de Crédito - Protheus/Oracle
+# Generador de Archivos de Carga desde PDF
 
-Este proyecto es una herramienta de escritorio desarrollada en **Python** para automatizar la conciliación de documentos fiscales (Facturas y Notas de Crédito) provenientes de archivos PDF con los registros en una base de datos **Oracle 11g (Protheus)**.
+Aplicación de escritorio desarrollada en Python para extraer Facturas y Notas de Crédito desde archivos PDF y generar archivos Excel compatibles con el sistema de carga de pagos.
 
-La aplicación identifica qué sucursales (tiendas) de un cliente específico no han sido procesadas en el documento actual, facilitando el control de gestión de cobros o pagos.
+La herramienta procesa automáticamente documentos fiscales contenidos en órdenes de pago, separando Facturas y Notas de Crédito en archivos independientes para facilitar su importación posterior.
 
-## 🚀 Características
+---
 
-- **Extracción Inteligente:** Identifica números de 13 dígitos y distingue automáticamente entre "FACTURA" y "NOTA DE CRÉDITO" analizando el contexto del texto.
-- **Validación Cruzada:** Consulta las tablas `SF2010` (Ventas) y `SF1010` (Compras/NC) de Protheus.
-- **Análisis de Brechas:** Compara los movimientos encontrados contra el universo de tiendas del cliente en la tabla `SA1010`.
-- **Interfaz Amigable:** GUI minimalista construida con Tkinter.
-- **Arquitectura Específica:** Optimizado para entornos de **32 bits**.
+## Características
 
-## 🛠️ Requisitos Técnicos
+### Extracción automática desde PDF
 
-Debido a integraciones con librerías específicas de bases de datos antiguas, este proyecto requiere:
-
-- **Python 3.10.11 (32 bits)**
-- **Oracle Instant Client (32 bits)** configurado en las variables de entorno (PATH).
-- Bibliotecas de Python:
-  - `pdfplumber`: Para la extracción de texto de los PDFs.
-  - `cx_Oracle`: Para la comunicación con el servidor Oracle.
-  - `tkinter`: Para la interfaz gráfica (incluido en la instalación estándar).
-
-## 📂 Estructura del Proyecto
+La aplicación identifica líneas con el formato:
 
 ```text
-├── interfaz.py        # Código de la GUI (Tkinter) y lógica de estados.
-├── motor_logico.py    # Motor de extracción PDF y consultas SQL.
-└── README.md          # Documentación del proyecto.
+274287835 - FACTURA - 0020010011951 1.480.920 0
+277342043 - NOTA CRED. - 0010010005107 -190.801 0
 ```
 
-## ⚙️ Instalación y Uso
-Clonar el repositorio:
+Extrayendo:
 
-Instalar dependencias:
-```
-Bash
-pip install pdfplumber cx_Oracle python-dotenv
-```
-Ejecutar la aplicación:
+* Tipo de documento (FACTURA o NOTA DE CRÉDITO)
+* Número de documento
+* Importe de factura
 
-Bash
+### Formateo automático
+
+Convierte automáticamente:
+
+```text
+0020010011951
+```
+
+en:
+
+```text
+002-001-0011951
+```
+
+### Separación por tipo
+
+Genera dos archivos Excel independientes:
+
+```text
+NombreArchivo_FACTURA_YYYYMMDD.xlsx
+NombreArchivo_NOTA_CREDITO_YYYYMMDD.xlsx
+```
+
+Ejemplo:
+
+```text
+London Import S.A.12-12_FACTURA_20260601.xlsx
+London Import S.A.12-12_NOTA_CREDITO_20260601.xlsx
+```
+
+### Tratamiento de importes
+
+* Elimina separadores de miles.
+* Las Notas de Crédito se guardan sin signo negativo.
+* Todos los valores son exportados en formato General.
+
+Ejemplos:
+
+```text
+1.480.920    -> 1480920
+-190.801     -> 190801
+```
+
+### Validación automática
+
+La aplicación muestra:
+
+* Total de Facturas detectadas en PDF.
+* Total de Notas de Crédito detectadas en PDF.
+* Total de Facturas exportadas al Excel.
+* Total de Notas de Crédito exportadas al Excel.
+
+Esto permite verificar rápidamente que la información exportada coincide con la información leída.
+
+### Configuración persistente
+
+La carpeta de salida seleccionada por el usuario se almacena automáticamente en:
+
+```text
+config.json
+```
+
+El archivo se crea junto al ejecutable o script.
+
+Al iniciar nuevamente la aplicación:
+
+* Si la carpeta sigue existiendo, se utiliza automáticamente.
+* Si la carpeta ya no existe, se solicita una nueva ubicación.
+
+---
+
+## Estructura del Proyecto
+
+```text
+├── interfaz.py
+├── lector_pdf_carga_excel.py
+├── config.json
+└── README.md
+```
+
+### interfaz.py
+
+Contiene:
+
+* Interfaz gráfica Tkinter.
+* Selección de PDF.
+* Selección de carpeta de salida.
+* Lectura y escritura de configuración.
+* Visualización de resultados y validaciones.
+
+### lector_pdf_carga_excel.py
+
+Contiene:
+
+* Extracción de documentos desde PDF.
+* Clasificación de Facturas y Notas de Crédito.
+* Generación de archivos Excel.
+* Formateo de documentos e importes.
+
+### config.json
+
+Archivo generado automáticamente para almacenar la ruta de salida utilizada por el usuario.
+
+---
+
+## Requisitos
+
+### Python
+
+```text
+Python 3.10 o superior
+```
+
+También compatible con Python 3.12.
+
+### Dependencias
+
+Instalar:
+
+```bash
+pip install pdfplumber openpyxl
+```
+
+---
+
+## Ejecución
+
+```bash
 python interfaz.py
-Compilar a EXE (Portable): Si deseas generar el ejecutable para Windows:
-Antes de realizarlo verificar variables de conexion de DB en obtener_nro_factura.py
 ```
-Bash
-pyinstaller --noconfirm --onefile --windowed --name "ValidadorTiendas" --clean interfaz.py
+
+---
+
+## Generación de Ejecutable
+
+```bash
+pyinstaller --noconfirm --onefile --windowed --name "GeneradorCargaPDF" interfaz.py
 ```
-🖥️ Interfaz de Usuario
-La interfaz consta de un flujo de dos pasos:
 
-Cargar PDF: Selecciona el archivo de extracto o factura.
+El ejecutable recordará automáticamente la carpeta de salida seleccionada mediante el archivo:
 
-Procesar: Ejecuta la lógica de extracción y consulta. El botón se bloquea durante la ejecución para proteger la integridad de la conexión a la base de datos.
+```text
+config.json
+```
 
-Desarrollado para entornos industriales con integración Protheus ERP.
+---
+
+## Flujo de Uso
+
+1. Abrir la aplicación.
+2. Seleccionar PDF.
+3. Generar archivos Excel.
+4. Revisar el resumen de validación.
+5. Utilizar los archivos generados para la carga en el sistema destino.
+
+---
+
+## Archivos Generados
+
+Cada ejecución genera:
+
+```text
+*_FACTURA_YYYYMMDD.xlsx
+*_NOTA_CREDITO_YYYYMMDD.xlsx
+```
+
+Los archivos se guardan en la carpeta configurada por el usuario.
+
+---
+
+## Estado Actual
+
+Funcionalidades implementadas:
+
+* Lectura de PDF.
+* Identificación de Facturas.
+* Identificación de Notas de Crédito.
+* Separación por tipo.
+* Formateo de documentos.
+* Limpieza de importes.
+* Exportación a Excel.
+* Validación PDF vs Excel.
+* Persistencia de configuración mediante JSON.
+* Compatibilidad con ejecutable Windows.
+
+```
+```
